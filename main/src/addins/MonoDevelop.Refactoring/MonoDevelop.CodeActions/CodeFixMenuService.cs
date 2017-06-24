@@ -1,4 +1,4 @@
-﻿//
+//
 // CodeFixMenu.cs
 //
 // Author:
@@ -160,7 +160,7 @@ namespace MonoDevelop.CodeActions
 					var provider = fix.Diagnostic.GetCodeFixProvider ().GetFixAllProvider ();
 					if (provider == null)
 						continue;
-					
+
 					if (!provider.GetSupportedFixAllScopes ().Contains (FixAllScope.Document))
 						continue;
 
@@ -217,12 +217,12 @@ namespace MonoDevelop.CodeActions
 
 		static async Task<ImmutableArray<Diagnostic>> GetDiagnosticsForDocument (ImmutableArray<DiagnosticAnalyzer> analyzers, Microsoft.CodeAnalysis.Document doc, ImmutableHashSet<string> diagnostics, CancellationToken token)
 		{
-			var sol = doc.Project.Solution;
+			var solution = doc.Project.Solution;
 			var options = new CompilationWithAnalyzersOptions (
 				new WorkspaceAnalyzerOptions (
 					new AnalyzerOptions (ImmutableArray<AdditionalText>.Empty),
-					sol.Options,
-					sol),
+					solution.Options,
+					solution),
 				delegate (Exception exception, DiagnosticAnalyzer analyzer, Diagnostic diag) {
 					LoggingService.LogError ("Exception in diagnostic analyzer " + diag.Id + ":" + diag.GetMessage (), exception);
 				},

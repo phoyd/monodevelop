@@ -1,21 +1,21 @@
-// 
+//
 // CodeAnalysisRunner.cs
-//  
+//
 // Author:
 //       Mike Krüger <mkrueger@xamarin.com>
-// 
+//
 // Copyright (c) 2012 Xamarin Inc. (http://xamarin.com)
-// 
+//
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
 // in the Software without restriction, including without limitation the rights
 // to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 // copies of the Software, and to permit persons to whom the Software is
 // furnished to do so, subject to the following conditions:
-// 
+//
 // The above copyright notice and this permission notice shall be included in
 // all copies or substantial portions of the Software.
-// 
+//
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -92,30 +92,30 @@ namespace MonoDevelop.CodeIssues
 				if (providers.Count == 0 || cancellationToken.IsCancellationRequested)
 					return Enumerable.Empty<Result> ();
 				#if DEBUG
-				Debug.Listeners.Add (consoleTraceListener); 
+				Debug.Listeners.Add (consoleTraceListener);
 				#endif
 
 				CompilationWithAnalyzers compilationWithAnalyzer;
 				var analyzers = ImmutableArray<DiagnosticAnalyzer>.Empty.AddRange (providers);
 				var diagnosticList = new List<Diagnostic> ();
 				try {
-					var sol = analysisDocument.DocumentContext.AnalysisDocument.Project.Solution;
+					var solution = analysisDocument.DocumentContext.AnalysisDocument.Project.Solution;
 					var options = new CompilationWithAnalyzersOptions (
 						new WorkspaceAnalyzerOptions (
 							new AnalyzerOptions (ImmutableArray<AdditionalText>.Empty),
-							sol.Options,
-							sol),
+							solution.Options,
+							solution),
 						delegate (Exception exception, DiagnosticAnalyzer analyzer, Diagnostic diag) {
 							LoggingService.LogError ("Exception in diagnostic analyzer " + diag.Id + ":" + diag.GetMessage (), exception);
 						},
-						false, 
+						false,
 						false
 					);
 
 					compilationWithAnalyzer = compilation.WithAnalyzers (analyzers, options);
 					if (input.ParsedDocument == null || cancellationToken.IsCancellationRequested)
 						return Enumerable.Empty<Result> ();
-					
+
 					diagnosticList.AddRange (await compilationWithAnalyzer.GetAnalyzerSemanticDiagnosticsAsync (model, null, cancellationToken).ConfigureAwait (false));
 					diagnosticList.AddRange (await compilationWithAnalyzer.GetAnalyzerSyntaxDiagnosticsAsync (model.SyntaxTree, cancellationToken).ConfigureAwait (false));
 				} catch (OperationCanceledException) {
@@ -126,7 +126,7 @@ namespace MonoDevelop.CodeIssues
 					return Enumerable.Empty<Result> ();
 				} finally {
 					#if DEBUG
-					Debug.Listeners.Remove (consoleTraceListener); 
+					Debug.Listeners.Remove (consoleTraceListener);
 					#endif
 					CompilationWithAnalyzers.ClearAnalyzerState (analyzers);
 				}
@@ -146,7 +146,7 @@ namespace MonoDevelop.CodeIssues
 				ae.Flatten ().Handle (ix => ix is OperationCanceledException);
 				return Enumerable.Empty<Result> ();
 			} catch (Exception e) {
-				LoggingService.LogError ("Error while running diagnostics.", e); 
+				LoggingService.LogError ("Error while running diagnostics.", e);
 				return Enumerable.Empty<Result> ();
 			}
 		}
