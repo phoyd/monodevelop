@@ -145,5 +145,7 @@
 		</Condition>
 	</Extension>
 
-
+	<Extension path="/MonoDevelop/Ide/TypeService/PlatformMefHostServices">
+		<Assembly file="MonoDevelop.Refactoring.dll"/>
+	</Extension>
 </ExtensionModel>

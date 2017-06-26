@@ -58,13 +58,6 @@ namespace MonoDevelop.CodeIssues
 			Refactorings = new List<CodeRefactoringDescriptor> ();
 		}
 
-		internal static AnalyzersFromAssembly CreateFrom (System.Reflection.Assembly asm, bool force = false)
-		{
-			var result = new AnalyzersFromAssembly ();
-			result.AddAssembly (asm, force);
-			return result;
-		}
-
 		internal void AddAssembly (System.Reflection.Assembly asm, bool force = false)
 		{
 			//FIXME; this is a really hacky arbitrary heuristic
@@ -142,8 +135,6 @@ namespace MonoDevelop.CodeIssues
 				throw;
 			}
 		}
-
-		readonly static string diagnosticAnalyzerAssembly = typeof (DiagnosticAnalyzerAttribute).Assembly.GetName ().Name;
 
 		static bool IsDiagnosticSupported (DiagnosticDescriptor diag)
 		{

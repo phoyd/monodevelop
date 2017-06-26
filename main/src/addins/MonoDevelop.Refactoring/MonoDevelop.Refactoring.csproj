@@ -113,6 +113,10 @@
       <HintPath>..\..\..\build\bin\Microsoft.CodeAnalysis.Features.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="Microsoft.CodeAnalysis.Workspaces.Desktop">
+      <HintPath>..\..\..\build\bin\Microsoft.CodeAnalysis.Workspaces.Desktop.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
@@ -162,6 +166,8 @@
     <Compile Include="MonoDevelop.Refactoring\RefactoringPreviewTooltipWindow.cs" />
     <Compile Include="MonoDevelop.CodeActions\CodeFixMenuService.cs" />
     <Compile Include="MonoDevelop.Refactoring\QuickFixMenuHandler.cs" />
+    <Compile Include="MonoDevelop.AnalysisCore\MonoDevelopWorkspaceDiagnosticAnalyzerProviderService.cs" />
+    <Compile Include="MonoDevelop.AnalysisCore\MonoDevelopWorkspaceDiagnosticAnalyzerProviderService.AnalyzerAssemblyLoader.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="MonoDevelop.Refactoring\" />
