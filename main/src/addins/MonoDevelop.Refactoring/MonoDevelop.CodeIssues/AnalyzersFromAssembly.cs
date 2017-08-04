@@ -58,6 +58,8 @@ namespace MonoDevelop.CodeIssues
 			Refactorings = new List<CodeRefactoringDescriptor> ();
 		}
 
+		readonly static string diagnosticAnalyzerAssembly = typeof (DiagnosticAnalyzerAttribute).Assembly.GetName ().Name;
+
 		internal void AddAssembly (System.Reflection.Assembly asm, bool force = false)
 		{
 			//FIXME; this is a really hacky arbitrary heuristic

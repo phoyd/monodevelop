@@ -27,6 +27,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.ComponentModel.Composition;
+using System.Linq;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Diagnostics;
 using MonoDevelop.Core;
@@ -63,6 +64,26 @@ namespace MonoDevelop.AnalysisCore
 
 			foreach (var asm in AppDomain.CurrentDomain.GetAssemblies ()) {
 				try {
+					var assemblyName = asm.GetName ().Name;
+					switch (assemblyName) {
+					//whitelist
+					case "RefactoringEssentials":
+					case "Refactoring Essentials":
+					case "Microsoft.CodeAnalysis.Features":
+					case "Microsoft.CodeAnalysis.VisualBasic.Features":
+					case "Microsoft.CodeAnalysis.CSharp.Features":
+						break;
+					//blacklist
+					case "FSharpBinding":
+						continue;
+					//addin assemblies that reference roslyn
+					default:
+						var refAsm = asm.GetReferencedAssemblies ();
+						if (refAsm.Any (a => a.Name == diagnosticAnalyzerAssembly) && refAsm.Any (a => a.Name == "MonoDevelop.Ide"))
+							break;
+						continue;
+					}
+
 					assemblies.Add (asm.Location);
 				} catch (Exception e) {
 					LoggingService.LogError ("Error while loading diagnostics in " + asm.FullName, e);
