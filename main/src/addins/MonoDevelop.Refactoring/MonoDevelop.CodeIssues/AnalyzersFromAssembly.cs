@@ -88,10 +88,6 @@ namespace MonoDevelop.CodeIssues
 
 			try {
 				foreach (var type in asm.GetTypes ()) {
-					var notPortedYetAttribute = (NotPortedYetAttribute)type.GetCustomAttributes (typeof(NotPortedYetAttribute), false).FirstOrDefault ();
-					if (notPortedYetAttribute!= null) {
-						continue;
-					}
 
 					//HACK: Workaround missing IChangeSignatureOptionsService and IExtractInterfaceOptionsService services in VSfM
 					//https://bugzilla.xamarin.com/show_bug.cgi?id=53771
