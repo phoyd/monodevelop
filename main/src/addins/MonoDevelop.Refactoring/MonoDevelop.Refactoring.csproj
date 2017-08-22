@@ -168,6 +168,8 @@
     <Compile Include="MonoDevelop.Refactoring\QuickFixMenuHandler.cs" />
     <Compile Include="MonoDevelop.AnalysisCore\MonoDevelopWorkspaceDiagnosticAnalyzerProviderService.cs" />
     <Compile Include="MonoDevelop.AnalysisCore\MonoDevelopWorkspaceDiagnosticAnalyzerProviderService.AnalyzerAssemblyLoader.cs" />
+    <Compile Include="MonoDevelop.CodeIssues\ChangeSignatureOptionsService.cs" />
+    <Compile Include="MonoDevelop.CodeIssues\ExtractInterfaceOptionsService.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="MonoDevelop.Refactoring\" />
