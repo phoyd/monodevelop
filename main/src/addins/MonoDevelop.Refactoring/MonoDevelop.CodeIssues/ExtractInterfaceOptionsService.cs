@@ -35,6 +35,7 @@ using Microsoft.CodeAnalysis.Notification;
  
 namespace Microsoft.VisualStudio.LanguageServices.Implementation.ExtractInterface
 {
+	// master-refactorings contains implementation for this
 	[ExportWorkspaceService(typeof(IExtractInterfaceOptionsService), ServiceLayer.Host), Shared]
 	class ExtractInterfaceOptionsService : IExtractInterfaceOptionsService
 	{

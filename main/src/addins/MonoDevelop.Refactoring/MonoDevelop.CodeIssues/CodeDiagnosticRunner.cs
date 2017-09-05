@@ -72,6 +72,7 @@ namespace MonoDevelop.CodeIssues
 				var providers = new List<DiagnosticAnalyzer> ();
 				var alreadyAdded = new HashSet<Type>();
 				if (diagnostics == null) {
+					
 					diagnostics = await CodeRefactoringService.GetCodeDiagnosticsAsync (analysisDocument.DocumentContext, language, cancellationToken);
 				}
 				var diagnosticTable = new Dictionary<string, CodeDiagnosticDescriptor> ();
@@ -92,54 +93,25 @@ namespace MonoDevelop.CodeIssues
 				if (providers.Count == 0 || cancellationToken.IsCancellationRequested)
 					return Enumerable.Empty<Result> ();
 				#if DEBUG
-				Debug.Listeners.Add (consoleTraceListener); 
+				Debug.Listeners.Add (consoleTraceListener);
 				#endif
 
-				CompilationWithAnalyzers compilationWithAnalyzer;
-				var analyzers = ImmutableArray<DiagnosticAnalyzer>.Empty.AddRange (providers);
-				var diagnosticList = new List<Diagnostic> ();
-				try {
-					var sln = analysisDocument.DocumentContext.AnalysisDocument.Project.Solution;
-					var options = new CompilationWithAnalyzersOptions (
-						new WorkspaceAnalyzerOptions (
-							new AnalyzerOptions (ImmutableArray<AdditionalText>.Empty),
-							sln.Options,
-							sln),
-						delegate (Exception exception, DiagnosticAnalyzer analyzer, Diagnostic diag) {
-							LoggingService.LogError ("Exception in diagnostic analyzer " + diag.Id + ":" + diag.GetMessage (), exception);
-						},
-						false, 
-						false
-					);
+				var diagService = Ide.Composition.CompositionManager.GetExportedValue<IDiagnosticService> ();
+				var results = diagService.GetDiagnostics (input.RoslynWorkspace, input.AnalysisDocument.Project.Id, input.AnalysisDocument.Id, null, false, cancellationToken);
 
-					compilationWithAnalyzer = compilation.WithAnalyzers (analyzers, options);
-					if (input.ParsedDocument == null || cancellationToken.IsCancellationRequested)
-						return Enumerable.Empty<Result> ();
-					
-					diagnosticList.AddRange (await compilationWithAnalyzer.GetAnalyzerSemanticDiagnosticsAsync (model, null, cancellationToken).ConfigureAwait (false));
-					diagnosticList.AddRange (await compilationWithAnalyzer.GetAnalyzerSyntaxDiagnosticsAsync (model.SyntaxTree, cancellationToken).ConfigureAwait (false));
-				} catch (OperationCanceledException) {
-				} catch (AggregateException ae) {
-					ae.Flatten ().Handle (ix => ix is OperationCanceledException);
-				} catch (Exception ex) {
-					LoggingService.LogError ("Error creating analyzer compilation", ex);
-					return Enumerable.Empty<Result> ();
-				} finally {
-					#if DEBUG
-					Debug.Listeners.Remove (consoleTraceListener); 
-					#endif
-					CompilationWithAnalyzers.ClearAnalyzerState (analyzers);
+				var resultList = new List<Result> ();
+				foreach (var data in results) {
+					if (data.Id.StartsWith ("CS", StringComparison.Ordinal))
+						continue;
+
+					var diagnostic = await data.ToDiagnosticAsync (input.AnalysisDocument.Project, cancellationToken);
+					if (!diagnosticTable [data.Id].GetIsEnabled (diagnostic.Descriptor))
+						continue;
+
+					resultList.Add (new DiagnosticResult (diagnostic));
+
 				}
-
-				return diagnosticList
-					.Where (d => !d.Id.StartsWith("CS", StringComparison.Ordinal))
-					.Where (d => diagnosticTable[d.Id].GetIsEnabled (d.Descriptor))
-					.Select (diagnostic => {
-						var res = new DiagnosticResult(diagnostic);
-						// var line = analysisDocument.Editor.GetLineByOffset (res.Region.Start);
-						// Console.WriteLine (diagnostic.Id + "/" + res.Region +"/" + analysisDocument.Editor.GetTextAt (line));
-						return res;
-					});
+				return resultList;
 			} catch (OperationCanceledException) {
 				return Enumerable.Empty<Result> ();
 			}  catch (AggregateException ae) {

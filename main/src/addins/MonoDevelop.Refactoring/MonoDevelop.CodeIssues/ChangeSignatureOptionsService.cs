@@ -31,6 +31,7 @@ using Microsoft.CodeAnalysis.Notification;
 
 namespace Microsoft.VisualStudio.LanguageServices.Implementation.ChangeSignature
 {
+	// master-refactorings contains implementation for this
 	[ExportWorkspaceService(typeof(IChangeSignatureOptionsService), ServiceLayer.Host), Shared]
 	internal class ChangeSignatureOptionsService : IChangeSignatureOptionsService
 	{

@@ -84,6 +84,7 @@ namespace MonoDevelop.AnalysisCore
 						continue;
 					}
 
+					// Figure out a way to disable E&C analyzers.
 					assemblies.Add (asm.Location);
 				} catch (Exception e) {
 					LoggingService.LogError ("Error while loading diagnostics in " + asm.FullName, e);
@@ -93,6 +94,16 @@ namespace MonoDevelop.AnalysisCore
 
 			// Go through all providers
 			return builder.AsImmutable ();
+		}
+
+		static bool IsDiagnosticSupported (DiagnosticDescriptor diag)
+		{
+			//filter out E&C analyzers as we don't support E&C
+			if (diag.CustomTags.Contains (WellKnownDiagnosticTags.EditAndContinue)) {
+				return false;
+			}
+
+			return true;
 		}
 	}
 }
