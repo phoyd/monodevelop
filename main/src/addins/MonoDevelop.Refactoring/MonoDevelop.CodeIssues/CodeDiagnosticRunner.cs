@@ -103,7 +103,8 @@ namespace MonoDevelop.CodeIssues
 					var options = new CompilationWithAnalyzersOptions (
 						new WorkspaceAnalyzerOptions (
 							new AnalyzerOptions (ImmutableArray<AdditionalText>.Empty),
-							sln.Workspace),
+							sln.Options,
+							sln),
 						delegate (Exception exception, DiagnosticAnalyzer analyzer, Diagnostic diag) {
 							LoggingService.LogError ("Exception in diagnostic analyzer " + diag.Id + ":" + diag.GetMessage (), exception);
 						},
